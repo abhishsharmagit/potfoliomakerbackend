@@ -5,7 +5,7 @@ import { User } from './entities/user.entitity';
 import { FileEntity } from './entities/file.entity';
 import { PortfolioEntity } from './entities/portfolio.entity';
 import { RepoEntity } from './entities/repo.entity';
- 
+
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -14,14 +14,15 @@ import { RepoEntity } from './entities/repo.entity';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: process.env.DATABASE_URL,
-        entities: [
-          User,
-          FileEntity,
-          PortfolioEntity,
-          RepoEntity
-        ],
+        entities: [User, FileEntity, PortfolioEntity, RepoEntity],
         synchronize: true,
-      })
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
+      }),
     }),
   ],
 })

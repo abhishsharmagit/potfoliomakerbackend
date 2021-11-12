@@ -20,7 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "copy-assets": "cp -rv src/assets/ dist/",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix .next && npm run build --prefix .next"
+    "heroku-postbuild": "npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "dependencies": {
     "@babel/preset-env": "^7.16.0",

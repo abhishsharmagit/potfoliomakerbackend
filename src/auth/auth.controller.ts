@@ -18,7 +18,7 @@ export class AuthController {
 
     const token = this.jwtService.sign(payload);
     return {
-      url: `http://localhost:3000/home/${token}`,
+      url: `https://nextjsfrontend.herokuapp.com/home/${token}`,
     };
   }
 }

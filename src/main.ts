@@ -12,9 +12,7 @@ async function bootstrap() {
   });
   app.use(express.json());
   app.use(cookieParser());
-  app.useStaticAssets(join(__dirname, "..", "public"));
-  app.setBaseViewsDir(join(__dirname, "..", "views"));
-  app.setViewEngine("hbs");
+  app.useStaticAssets(join(__dirname, '..', '.next'))
   const service = app.get(ConfigService);
   await app.listen(process.env.PORT || 5001 as number);
 }

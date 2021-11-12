@@ -20,7 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "copy-assets": "cp -rv src/assets/ dist/",
-    "heroku-postbuild": "npm install --only=dev --no-shrinkwrap && npm run build"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix .next && npm run build --prefix .next"
   },
   "dependencies": {
     "@babel/preset-env": "^7.16.0",
@@ -32,6 +32,7 @@
     "@nestjs/jwt": "^8.0.0",
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/serve-static": "^2.2.2",
     "@nestjs/typeorm": "^8.0.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/passport-github2": "^1.2.5",

@@ -5,6 +5,7 @@ import * as cookieParser from "cookie-parser";
 import { join } from "path";
 import { NestExpressApplication } from "@nestjs/platform-express";
 const express = require("express");
+require('https').globalAgent.options.rejectUnauthorized = false;
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {

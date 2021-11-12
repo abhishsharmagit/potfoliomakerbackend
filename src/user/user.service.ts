@@ -81,7 +81,7 @@ export class UserService {
         path: dto.path,
       };
       const content = fs.readFileSync(
-        `/home/thinksys/Desktop/github-oauth/backend/dist/${params.path}`,
+        `/home/thinksys/Desktop/nestdeploy/dist/${params.path}`,
         "binary"
       );
 
@@ -132,7 +132,7 @@ export class UserService {
 
   async createPortfolio(dto:IcreatePortfolioDTO, id: string) {
     const js = fs.writeFileSync(
-      "/home/thinksys/Desktop/github-oauth/backend/dist/js/credentials.json",
+      "/home/thinksys/Desktop/nestdeploy/dist/js/credentials.json",
       JSON.stringify(dto)
     );
 

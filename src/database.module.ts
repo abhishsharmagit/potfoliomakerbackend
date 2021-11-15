@@ -5,6 +5,7 @@ import { User } from './entities/user.entitity';
 import { FileEntity } from './entities/file.entity';
 import { PortfolioEntity } from './entities/portfolio.entity';
 import { RepoEntity } from './entities/repo.entity';
+import dotenv from 'dotenv/config';
 
 @Module({
   imports: [
@@ -13,15 +14,13 @@ import { RepoEntity } from './entities/repo.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: process.env.DATABASE_URL,
+        host: configService.get('POSTGRES_HOST'),
+        port: configService.get('POSTGRES_PORT'),
+        username: configService.get('POSTGRES_USER'),
+        password: configService.get('POSTGRES_PASSWORD'),
+        database: configService.get('POSTGRES_DB'),
         entities: [User, FileEntity, PortfolioEntity, RepoEntity],
         synchronize: true,
-        ssl: true,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
-        },
       }),
     }),
   ],

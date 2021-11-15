@@ -16,17 +16,17 @@ export class AuthService {
   ) {}
 
   async getUser(id: any, username: string, token: string) {
-    const userExist = this.userRepo.findOne({ githubId: id });
+    const userExist = await this.userRepo.findOne({ githubId: id });
     if (userExist) {
       const user = await this.userRepo.update({ githubId: id }, { token });
-      return this.userRepo.findOne({ githubId: id });
+      return await this.userRepo.findOne({ githubId: id });
     } else {
       const payload: CreateUserDTO = {
         username,
         token,
         githubId: id,
       };
-      const userEntity = this.userRepo.create(payload);
+      const userEntity = await this.userRepo.create(payload);
       const user = await this.userRepo.save(userEntity);
       return user;
     }

@@ -75,14 +75,14 @@ export class UserService {
         fileName: dto.fileName,
         repoName: repoName,
       });
-      console.log(fileExist.sha, 'sha')
+      //console.log(fileExist.sha, 'sha')
       const params = {
         owner: user.username,
         repo: repoName,
         path: dto.path,
       };
       const content = fs.readFileSync(
-        `/home/thinksys/Desktop/oauthGithub/nestdeploy/dist/${params.path}`,
+        `${process.cwd()}/dist/${params.path}`,
         "binary"
       );
 
@@ -133,8 +133,9 @@ export class UserService {
 
   async createPortfolio(dto:IcreatePortfolioDTO, id: string) {
     console.log(__dirname,'dirname')
+    console.log(process.cwd())
     const js = fs.writeFileSync(
-      "/home/thinksys/Desktop/oauthGithub/nestdeploy/dist/js/credentials.json",
+        `${process.cwd()}/dist/js/credentials.json`,
       JSON.stringify(dto)
     );
 

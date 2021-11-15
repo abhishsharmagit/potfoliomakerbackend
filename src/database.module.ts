@@ -21,6 +21,9 @@ import dotenv from 'dotenv/config';
         database: configService.get('POSTGRES_DB'),
         entities: [User, FileEntity, PortfolioEntity, RepoEntity],
         synchronize: true,
+        ssl: {
+          rejectUnauthorized: false,
+        },
       }),
     }),
   ],

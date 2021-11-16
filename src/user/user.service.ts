@@ -1,20 +1,20 @@
-import { Injectable, Req } from "@nestjs/common";
-import axios, { AxiosRequestConfig } from "axios";
-import { CreateFileDTO } from "../dto/createFileDTO";
-import { CreateRepoDTO } from "../dto/createRepoDTO";
-import { AuthService } from "../auth/auth.service";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { User } from "../entities/user.entitity";
-import { CreateUserDTO } from "../dto/createUserDTO";
-import { request } from "express";
-import * as fs from "fs";
-import { filePayload } from "src/helper/config";
-import { DeployPortfolioDTO } from "src/dto/deployPortfolioDTO";
-import { FileEntity } from "src/entities/file.entity";
-import { PortfolioEntity } from "src/entities/portfolio.entity";
-import { RepoEntity } from "src/entities/repo.entity";
-import { IcreatePortfolioDTO } from "src/dto/createPortfolioDTO";
+import { Injectable, Req } from '@nestjs/common';
+import axios, { AxiosRequestConfig } from 'axios';
+import { CreateFileDTO } from '../dto/createFileDTO';
+import { CreateRepoDTO } from '../dto/createRepoDTO';
+import { AuthService } from '../auth/auth.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../entities/user.entitity';
+import { CreateUserDTO } from '../dto/createUserDTO';
+import { request } from 'express';
+import * as fs from 'fs';
+import { filePayload } from 'src/helper/config';
+import { DeployPortfolioDTO } from 'src/dto/deployPortfolioDTO';
+import { FileEntity } from 'src/entities/file.entity';
+import { PortfolioEntity } from 'src/entities/portfolio.entity';
+import { RepoEntity } from 'src/entities/repo.entity';
+import { IcreatePortfolioDTO } from 'src/dto/createPortfolioDTO';
 
 @Injectable()
 export class UserService {
@@ -25,7 +25,7 @@ export class UserService {
     @InjectRepository(PortfolioEntity)
     private portfolioRepo: Repository<PortfolioEntity>,
     @InjectRepository(RepoEntity)
-    private repoRepository: Repository<RepoEntity>
+    private repoRepository: Repository<RepoEntity>,
   ) {}
 
   async getUser(id: string) {
@@ -44,18 +44,18 @@ export class UserService {
       const user = await this.userRepository.findOne(id);
 
       const config: AxiosRequestConfig = {
-        method: "POST",
+        method: 'POST',
         data: dto,
         headers: {
           Authorization: `Bearer ${await this.getToken(id)}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       };
       const repo: any = await axios(
-        "https://api.github.com/user/repos",
-        config
+        'https://api.github.com/user/repos',
+        config,
       );
-      console.log(repo,'repo')
+      console.log(repo, 'repo');
       const payload = {
         repoName: dto.name,
         user: user,
@@ -83,22 +83,22 @@ export class UserService {
       };
       const content = fs.readFileSync(
         `${process.cwd()}/dist/${params.path}`,
-        "binary"
+        'binary',
       );
 
       const data = fileExist
         ? {
             message: dto.message,
-            content: Buffer.from(content, "binary").toString("base64"),
+            content: Buffer.from(content, 'binary').toString('base64'),
             sha: fileExist.sha,
           }
         : {
             message: dto.message,
-            content: Buffer.from(content, "binary").toString("base64"),
+            content: Buffer.from(content, 'binary').toString('base64'),
           };
 
       const config: AxiosRequestConfig = {
-        method: "PUT",
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${await this.getToken(id)}`,
         },
@@ -106,7 +106,7 @@ export class UserService {
       };
       const createdfile: any = await axios(
         `https://api.github.com/repos/${params.owner}/${params.repo}/contents/${params.path}`,
-        config
+        config,
       );
       const payload = {
         fileName: createdfile.data.content.name,
@@ -118,52 +118,60 @@ export class UserService {
         const fileEntity = await this.fileRepository.create(payload);
         await this.fileRepository.save(fileEntity);
       }
-
+      console.log(createdfile.data, 'filecreated')
       return createdfile.data;
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
   }
 
   async getToken(id: string) {
-    const user = await this.userRepository.findOne({ id });
-    console.log(user.token,'usertoken')
-    return user.token;
+    try {
+      const user = await this.userRepository.findOne({ id });
+      console.log(user.token, 'usertoken');
+      return user.token;
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
-  async createPortfolio(dto:IcreatePortfolioDTO, id: string) {
-    console.log(__dirname,'dirname')
-    console.log(process.cwd())
-    const js = fs.writeFileSync(
+  async createPortfolio(dto: IcreatePortfolioDTO, id: string) {
+    try {
+      console.log(__dirname, 'dirname');
+      console.log(process.cwd());
+      const js = fs.writeFileSync(
         `${process.cwd()}/dist/js/credentials.json`,
-      JSON.stringify(dto)
-    );
+        JSON.stringify(dto),
+      );
 
-    const repoPayload: CreateRepoDTO = {
-      name: dto.portfolio,
-      description: "my portfolio",
-      homepage: "https://github.com",
-      private: false,
-      has_issues: true,
-      has_projects: true,
-      has_wiki: true,
-    };
-    const existingRepo = await this.repoRepository.findOne({
-      repoName: repoPayload.name,
-    });
-console.log(1)
-    !existingRepo && (await this.createRepo(repoPayload, id));
+      const repoPayload: CreateRepoDTO = {
+        name: dto.portfolio,
+        description: 'my portfolio',
+        homepage: 'https://github.com',
+        private: false,
+        has_issues: true,
+        has_projects: true,
+        has_wiki: true,
+      };
+      const existingRepo = await this.repoRepository.findOne({
+        repoName: repoPayload.name,
+      });
+      console.log(1);
+      !existingRepo && (await this.createRepo(repoPayload, id));
 
-    const files = filePayload;
-    for (const file of files) {
-      await this.createFile(id, file, dto.portfolio);
-    }
-    const githubPage = await this.getGithubPage(repoPayload.name, id);
+      const files = filePayload;
+      for (const file of files) {
+        await this.createFile(id, file, dto.portfolio);
+      }
+      const githubPage = await this.getGithubPage(repoPayload.name, id);
 
-    if (githubPage) {
-      return githubPage;
-    } else {
-      return await this.deployPortfolio(id, dto.portfolio);
+      if (githubPage) {
+        return githubPage;
+      } else {
+        return await this.deployPortfolio(id, dto.portfolio);
+      }
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -176,13 +184,13 @@ console.log(1)
     };
     const data = {
       source: {
-        branch: "main",
-        path: "/",
+        branch: 'main',
+        path: '/',
       },
     };
 
     const config: AxiosRequestConfig = {
-      method: "POST",
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${await this.getToken(id)}`,
       },
@@ -190,14 +198,14 @@ console.log(1)
     };
     const result: any = await axios(
       `https://api.github.com/repos/${params.owner}/${params.repo}/pages`,
-      config
+      config,
     );
     const payload = {
       url: result.data.html_url,
       user: user,
     };
     const portfolioEntity = await this.portfolioRepo.create(payload);
-    this.portfolioRepo.save(portfolioEntity);
+    await this.portfolioRepo.save(portfolioEntity);
     return result.data.html_url;
   }
 
@@ -205,7 +213,7 @@ console.log(1)
     try {
       const user = await this.userRepository.findOne(id);
       const config: AxiosRequestConfig = {
-        method: "GET",
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${await this.getToken(id)}`,
         },
@@ -213,11 +221,11 @@ console.log(1)
 
       const page: any = await axios(
         `https://api.github.com/repos/${user.username}/${repo}/pages`,
-        config
+        config,
       );
       return page.data.html_url;
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
   }
 }

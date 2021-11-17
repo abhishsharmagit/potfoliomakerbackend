@@ -6,8 +6,6 @@ import { AuthService } from '../auth/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entitity';
-import { CreateUserDTO } from '../dto/createUserDTO';
-import { request } from 'express';
 import * as fs from 'fs';
 import { filePayload } from 'src/helper/config';
 import { DeployPortfolioDTO } from 'src/dto/deployPortfolioDTO';
@@ -55,7 +53,7 @@ export class UserService {
         'https://api.github.com/user/repos',
         config,
       );
-      console.log(repo, 'repo');
+
       const payload = {
         repoName: dto.name,
         user: user,
@@ -64,7 +62,7 @@ export class UserService {
       await this.repoRepository.save(repoEntity);
       return repo.data;
     } catch (e) {
-      console.log(e);
+      console.log(e.message, 'repoerror');
     }
   }
 
@@ -75,7 +73,7 @@ export class UserService {
         fileName: dto.fileName,
         repoName: repoName,
       });
-      //console.log(fileExist.sha, 'sha')
+
       const params = {
         owner: user.username,
         repo: repoName,
@@ -104,10 +102,12 @@ export class UserService {
         },
         data: data,
       };
+
       const createdfile: any = await axios(
         `https://api.github.com/repos/${params.owner}/${params.repo}/contents/${params.path}`,
         config,
       );
+
       const payload = {
         fileName: createdfile.data.content.name,
         sha: createdfile.data.content.sha,
@@ -117,28 +117,27 @@ export class UserService {
       if (!fileExist) {
         const fileEntity = await this.fileRepository.create(payload);
         await this.fileRepository.save(fileEntity);
+      } else {
+        await this.fileRepository.update({ id: fileExist.id }, payload);
       }
-      console.log(createdfile.data, 'filecreated')
+
       return createdfile.data;
     } catch (e) {
-      console.log(e.message);
+      console.log(e.message, 'fileerror');
     }
   }
 
   async getToken(id: string) {
     try {
       const user = await this.userRepository.findOne({ id });
-      console.log(user.token, 'usertoken');
       return user.token;
     } catch (e) {
-      console.log(e.message);
+      console.log(e.message, 'tokenerror');
     }
   }
 
   async createPortfolio(dto: IcreatePortfolioDTO, id: string) {
     try {
-      console.log(__dirname, 'dirname');
-      console.log(process.cwd());
       const js = fs.writeFileSync(
         `${process.cwd()}/dist/js/credentials.json`,
         JSON.stringify(dto),
@@ -156,7 +155,7 @@ export class UserService {
       const existingRepo = await this.repoRepository.findOne({
         repoName: repoPayload.name,
       });
-      console.log(1);
+
       !existingRepo && (await this.createRepo(repoPayload, id));
 
       const files = filePayload;

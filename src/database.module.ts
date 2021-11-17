@@ -5,7 +5,6 @@ import { User } from './entities/user.entitity';
 import { FileEntity } from './entities/file.entity';
 import { PortfolioEntity } from './entities/portfolio.entity';
 import { RepoEntity } from './entities/repo.entity';
-import dotenv from 'dotenv/config';
 
 @Module({
   imports: [

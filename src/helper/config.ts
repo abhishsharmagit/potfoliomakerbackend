@@ -4,7 +4,7 @@ export const filePayload: CreateFileDTO[] = [
   {
     path: "bundle.js",
     message: "conatct file created",
-    fileName: "app.js",
+    fileName: "bundle.js",
   },
   {
     path: "js/credentials.json",

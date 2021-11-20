@@ -5,6 +5,7 @@ import { User } from './entities/user.entitity';
 import { FileEntity } from './entities/file.entity';
 import { PortfolioEntity } from './entities/portfolio.entity';
 import { RepoEntity } from './entities/repo.entity';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -19,10 +20,13 @@ import { RepoEntity } from './entities/repo.entity';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         entities: [User, FileEntity, PortfolioEntity, RepoEntity],
-        synchronize: true,
-        ssl: {
-          rejectUnauthorized: false,
+        synchronize: false,
+        migrationsTableName: 'typeorm_migrations',
+        migrations: [path.resolve(`${process.cwd()}/dist/migrations/*.js`)],
+        cli: {
+          migrationsDir: 'migrations',
         },
+        ssl: false,
       }),
     }),
   ],

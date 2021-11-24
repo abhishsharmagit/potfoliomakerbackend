@@ -1,15 +1,15 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export interface IcreatePortfolioDTO {
   about: string;
   address: string;
-  description:string;
-  phone:string;
-  firstName:string;
-  portfolio:string;
-  profile?:string;
-  inTouch:string;
-  email:string;
+  description: string;
+  phone: string;
+  firstName: string;
+  portfolio: string;
+  profile?: string;
+  inTouch: string;
+  email: string;
 }
 
 export class CreatePortfolioDTO implements IcreatePortfolioDTO {

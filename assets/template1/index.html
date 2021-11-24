@@ -111,7 +111,7 @@
                 alt=""
               />
               <img
-                src="https://abhishsharmagit.github.io/portfolio-website/img/person.png"
+                src="./images/portfolioImage.png"
                 class="img-element z-index"
                 alt=""
               />
@@ -396,20 +396,20 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <script src="./bundle.js"></script>
+    <script src="./js/bundle.js"></script>
     <script>
-      const title = document.getElementById("name");
-      const profile = document.getElementById("profile");
-      const description = document.getElementById("description");
-      const phone = document.getElementById("phone");
-      const email = document.getElementById("email");
-      const address = document.getElementById("address");
-      const about = document.getElementById("about");
-      const inTouch = document.getElementById("inTouch");
+      const title = document.getElementById('name');
+      const profile = document.getElementById('profile');
+      const description = document.getElementById('description');
+      const phone = document.getElementById('phone');
+      const email = document.getElementById('email');
+      const address = document.getElementById('address');
+      const about = document.getElementById('about');
+      const inTouch = document.getElementById('inTouch');
 
       var request = new XMLHttpRequest();
 
-      request.open("GET", "./js/credentials.json", true);
+      request.open('GET', './js/credentials.json', true);
 
       request.onload = function () {
         if (request.status >= 200 && request.status < 400) {

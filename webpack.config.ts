@@ -1,9 +1,12 @@
 module.exports = {
-  entry: "./src/assets/js/app.js",
-  mode: "development",
+  entry: {
+    'template1/js/bundle': './assets/template1/js/app.js',
+    'template2/js/bundle': './assets/template2/js/custom.js',
+  },
+  mode: 'development',
   output: {
     path: `${__dirname}/dist`,
-    filename: "bundle.js",
+    filename: '[name].js',
   },
   module: {
     rules: [
@@ -11,23 +14,23 @@ module.exports = {
         test: /\.(js)x?$/,
         exclude: [/node_modules/],
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-env", "@babel/preset-react"],
+            presets: ['@babel/preset-env', '@babel/preset-react'],
           },
         },
       },
       {
         test: /\.ttf$/i,
-        use: ["file-loader"],
+        use: ['file-loader'],
       },
       {
         test: /\.(svg|gif|png|eot|woff|ttf)$/,
-        use: ["url-loader"],
+        use: ['url-loader'],
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },

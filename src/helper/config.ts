@@ -12,6 +12,11 @@ export const filePayload: CreateFileDTO[] = [
     fileName: "credentials.json",
   },
   {
+    path: "images/portfolioImage.png",
+    message: "image file created",
+    fileName: "portfolioImage.png",
+  },
+  {
     path: "index.html",
     message: "conatct file created",
     fileName: "index.html",

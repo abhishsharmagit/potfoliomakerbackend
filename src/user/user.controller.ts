@@ -23,7 +23,7 @@ import * as path from 'path';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 
-export const storage = {
+export const storeImage = {
   storage: diskStorage({
     destination: `${process.cwd()}/dist/images`,
     filename: (req, file, cb) => {
@@ -36,6 +36,19 @@ export const storage = {
     },
   }),
 };
+
+export const storeResume = {
+  storage: diskStorage({
+    destination: `${process.cwd()}/dist/resume`,
+    filename: (req, file, cb) => {
+      const filename: string = path.parse('resume').name.replace(/\s/g, '');
+      const extension: string = path.parse(file.originalname).ext;
+
+      cb(null, `${filename}${extension}`);
+    },
+  }),
+};
+
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -58,8 +71,20 @@ export class UserController {
   }
 
   @UseGuards(JWTAuthGuard)
-  @Post('/upload')
-  @UseInterceptors(FileInterceptor('file', storage))
+  @Post('/uploadImage')
+  @UseInterceptors(FileInterceptor('file', storeImage))
+  uploadImage(@UploadedFile() file, @Req() req) {
+    try {
+      console.log(file, 'filename');
+      return file.filename;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Post('/uploadResume')
+  @UseInterceptors(FileInterceptor('resume', storeResume))
   uploadFile(@UploadedFile() file, @Req() req) {
     try {
       console.log(file, 'filename');

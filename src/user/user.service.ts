@@ -80,10 +80,10 @@ export class UserService {
         path: dto.path,
       };
       const content = fs.readFileSync(
-        `${process.cwd()}/dist/${params.path}`,
+        `${process.cwd()}/dist/${dto.readPath}`,
         'binary',
       );
-
+      console.log(1);
       const data = fileExist
         ? {
             message: dto.message,
@@ -107,7 +107,7 @@ export class UserService {
         `https://api.github.com/repos/${params.owner}/${params.repo}/contents/${params.path}`,
         config,
       );
-
+      console.log(2);
       const payload = {
         fileName: createdfile.data.content.name,
         sha: createdfile.data.content.sha,
@@ -139,7 +139,7 @@ export class UserService {
   async createPortfolio(dto: IcreatePortfolioDTO, id: string) {
     try {
       const js = fs.writeFileSync(
-        `${process.cwd()}/dist/js/credentials.json`,
+        `${process.cwd()}/dist/${dto.template}/js/credentials.json`,
         JSON.stringify(dto),
       );
 
@@ -158,7 +158,7 @@ export class UserService {
 
       !existingRepo && (await this.createRepo(repoPayload, id));
 
-      const files = filePayload;
+      const files = filePayload(dto.template, dto.imageName, dto.resumeName);
       for (const file of files) {
         await this.createFile(id, file, dto.portfolio);
       }
@@ -167,14 +167,14 @@ export class UserService {
       if (githubPage) {
         return githubPage;
       } else {
-        return await this.deployPortfolio(id, dto.portfolio);
+        return await this.deployPortfolio(id, dto.portfolio, dto.template);
       }
     } catch (e) {
       console.log(e);
     }
   }
 
-  async deployPortfolio(id: string, repoName: string) {
+  async deployPortfolio(id: string, repoName: string, template: string) {
     const user = await this.userRepository.findOne(id);
 
     const params: DeployPortfolioDTO = {
@@ -205,7 +205,7 @@ export class UserService {
     };
     const portfolioEntity = await this.portfolioRepo.create(payload);
     await this.portfolioRepo.save(portfolioEntity);
-    return result.data.html_url;
+    return `${result.data.html_url}`;
   }
 
   async getGithubPage(repo: string, id: string) {

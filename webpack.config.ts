@@ -1,7 +1,7 @@
 module.exports = {
   entry: {
     'template1/js/bundle': './assets/template1/js/app.js',
-    'template2/js/bundle': './assets/template2/js/custom.js',
+    'template2/js/bundle': './assets/template2/app.js',
   },
   mode: 'development',
   output: {

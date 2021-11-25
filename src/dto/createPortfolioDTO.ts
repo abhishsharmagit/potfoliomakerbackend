@@ -10,6 +10,9 @@ export interface IcreatePortfolioDTO {
   profile?: string;
   inTouch: string;
   email: string;
+  template: string;
+  imageName?: string;
+  resumeName?: string;
 }
 
 export class CreatePortfolioDTO implements IcreatePortfolioDTO {
@@ -29,4 +32,6 @@ export class CreatePortfolioDTO implements IcreatePortfolioDTO {
   inTouch: string;
   @IsString()
   email: string;
+  @IsString()
+  template: string;
 }

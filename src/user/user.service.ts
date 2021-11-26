@@ -60,6 +60,7 @@ export class UserService {
       };
       const repoEntity = await this.repoRepository.create(payload);
       await this.repoRepository.save(repoEntity);
+      console.log('repocreatedherrererererere');
       return repo.data;
     } catch (e) {
       console.log(e.message, 'repoerror');
@@ -123,7 +124,7 @@ export class UserService {
 
       return createdfile.data;
     } catch (e) {
-      console.log(e.message, 'fileerror');
+      console.log(e, 'fileerror');
     }
   }
 
@@ -155,10 +156,11 @@ export class UserService {
       const existingRepo = await this.repoRepository.findOne({
         repoName: repoPayload.name,
       });
-
+      console.log(existingRepo, 'existingrepo');
       !existingRepo && (await this.createRepo(repoPayload, id));
 
       const files = filePayload(dto.template, dto.imageName, dto.resumeName);
+      console.log(files, 'files')
       for (const file of files) {
         await this.createFile(id, file, dto.portfolio);
       }

@@ -426,7 +426,10 @@
           address.innerHTML = data.address;
           about.innerHTML = data.about;
           inTouch.innerHTML = data.inTouch;
-          portfolioImg.src = `./images/portfolioImage.${ext}`;
+          data.imageName
+            ? (portfolioImg.src = `./images/portfolioImage.${ext}`)
+            : (portfolioImg.src =
+                'https://abhishsharmagit.github.io/portfolio-website/img/person.png');
         } else {
           // We reached our target server, but it returned an error
         }

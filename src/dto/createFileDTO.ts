@@ -3,7 +3,9 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 export interface IcreateFileDTO {
   path: string;
   repoName?: string;
-  readPath: string;
+  readPath?: string;
+  message: string;
+  fileName: string;
 }
 
 export class CreateFileDTO implements IcreateFileDTO {

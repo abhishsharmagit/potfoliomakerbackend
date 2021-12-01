@@ -9,8 +9,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateRepoDTO } from '../dto/createRepoDTO';
-import { CreateFileDTO } from '../dto/createFileDTO';
 import { JWTAuthGuard } from 'src/auth/guard/jwtGuard';
 import { Request } from 'express';
 import { User } from 'src/entities/user.entitity';
@@ -21,7 +19,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
 import { diskStorage } from 'multer';
-import { v4 as uuidv4 } from 'uuid';
 
 export const storeImage = {
   storage: diskStorage({
@@ -92,5 +89,17 @@ export class UserController {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Post('/repoExist')
+  async checkRepoExist(@Body() dto, @Req() req) {
+    console.log('baked');
+    const result = await this.userService.checkRepoExist(
+      req.user.username,
+      dto.repoName,
+    );
+    console.log(result, 'result');
+    return result;
   }
 }

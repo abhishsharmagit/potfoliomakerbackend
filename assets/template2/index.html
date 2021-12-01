@@ -40,7 +40,9 @@
             <div class="left">
               <div class="big-title">
                 <h1 id="name">Future is here</h1>
-                <h1 id="profile" style="font-size: x-large;">Start Exploring now.</h1>
+                <h1 id="profile" style="font-size: x-large">
+                  Start Exploring now.
+                </h1>
               </div>
               <p class="text" id="description">
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
@@ -259,7 +261,10 @@
           address.innerHTML = data.address;
           about.innerHTML = data.about;
           inTouch.innerHTML = data.inTouch;
-          portfolioImg.src = `./images/portfolioImage.${ext}`;
+          data.imageName
+            ? (portfolioImg.src = `./images/portfolioImage.${ext}`)
+            : (portfolioImg.src =
+                'https://abhishsharmagit.github.io/portfolio-website/img/template2/person.png');
         } else {
           // We reached our target server, but it returned an error
         }

@@ -13,6 +13,7 @@ import { FileEntity } from 'src/entities/file.entity';
 import { PortfolioEntity } from 'src/entities/portfolio.entity';
 import { RepoEntity } from 'src/entities/repo.entity';
 import { IcreatePortfolioDTO } from 'src/dto/createPortfolioDTO';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -64,6 +65,32 @@ export class UserService {
       return repo.data;
     } catch (e) {
       console.log(e.message, 'repoerror');
+    }
+  }
+
+  async checkRepoExist(username: string, repoName: string): Promise<any> {
+    try {
+      const existingRepo = await this.repoRepository.findOne({
+        repoName: repoName,
+      });
+      const repo = await axios(
+        `https://api.github.com/users/${username}/repos`,
+      );
+
+      const exist = repo.data.filter((data) => {
+        return data.name === repoName;
+      });
+
+      if (existingRepo && exist) {
+        return true;
+      } else if (existingRepo && !exist) {
+        await this.repoRepository.delete({ repoName });
+        return false;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      console.log(e, 'checkrepoeror');
     }
   }
 
@@ -143,6 +170,7 @@ export class UserService {
         `${process.cwd()}/dist/${dto.template}/js/credentials.json`,
         JSON.stringify(dto),
       );
+      const user = await this.userRepository.findOne(id);
 
       const repoPayload: CreateRepoDTO = {
         name: dto.portfolio,
@@ -153,23 +181,27 @@ export class UserService {
         has_projects: true,
         has_wiki: true,
       };
-      const existingRepo = await this.repoRepository.findOne({
-        repoName: repoPayload.name,
-      });
-      console.log(existingRepo, 'existingrepo');
-      !existingRepo && (await this.createRepo(repoPayload, id));
+      console.log(repoPayload, 'repopayload');
+
+      const checkRepoExist = await this.checkRepoExist(
+        user.username,
+        repoPayload.name,
+      );
+      if (!checkRepoExist) {
+        await this.createRepo(repoPayload, id);
+      }
 
       const files = filePayload(dto.template, dto.imageName, dto.resumeName);
-      console.log(files, 'files')
+      console.log(files, 'files');
       for (const file of files) {
-        await this.createFile(id, file, dto.portfolio);
+        await this.createFile(id, file, repoPayload.name);
       }
       const githubPage = await this.getGithubPage(repoPayload.name, id);
 
       if (githubPage) {
         return githubPage;
       } else {
-        return await this.deployPortfolio(id, dto.portfolio, dto.template);
+        return await this.deployPortfolio(id, repoPayload.name, dto.template);
       }
     } catch (e) {
       console.log(e);

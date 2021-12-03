@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './entities/user.entitity';
+import { User } from './entities/user.entity';
 import { FileEntity } from './entities/file.entity';
 import { PortfolioEntity } from './entities/portfolio.entity';
 import { RepoEntity } from './entities/repo.entity';

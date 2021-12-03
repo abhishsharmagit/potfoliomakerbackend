@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { JWTAuthGuard } from 'src/auth/guard/jwtGuard';
 import { Request } from 'express';
-import { User } from 'src/entities/user.entitity';
+import { IUser, User } from 'src/entities/user.entity';
 import {
   CreatePortfolioDTO,
   IcreatePortfolioDTO,
@@ -57,7 +57,7 @@ export class UserController {
 
   @UseGuards(JWTAuthGuard)
   @Get('me')
-  async getMe(@Req() req): Promise<User> {
+  async getMe(@Req() req): Promise<IUser> {
     return await this.userService.getUser(req.user.id);
   }
 
@@ -91,15 +91,5 @@ export class UserController {
     }
   }
 
-  @UseGuards(JWTAuthGuard)
-  @Post('/repoExist')
-  async checkRepoExist(@Body() dto, @Req() req) {
-    console.log('baked');
-    const result = await this.userService.checkRepoExist(
-      req.user.username,
-      dto.repoName,
-    );
-    console.log(result, 'result');
-    return result;
-  }
+ 
 }

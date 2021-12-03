@@ -5,7 +5,7 @@ import { CreateRepoDTO } from '../dto/createRepoDTO';
 import { AuthService } from '../auth/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entitity';
+import { IUser, User } from '../entities/user.entity';
 import * as fs from 'fs';
 import { filePayload } from 'src/helper/config';
 import { DeployPortfolioDTO } from 'src/dto/deployPortfolioDTO';
@@ -27,12 +27,16 @@ export class UserService {
     private repoRepository: Repository<RepoEntity>,
   ) {}
 
-  async getUser(id: string) {
+  async getUser(id: string): Promise<IUser> {
     try {
       const user: User = await this.userRepository.findOne({
         id,
       });
-      return user;
+      return {
+        id: user.id,
+        githubId: user.githubId,
+        username: user.username,
+      };
     } catch (e) {
       console.log(e.message);
     }
@@ -68,25 +72,29 @@ export class UserService {
     }
   }
 
-  async checkRepoExist(username: string, repoName: string): Promise<any> {
+  async checkRepoExist(username: string, repoName: string): Promise<boolean> {
     try {
       const existingRepo = await this.repoRepository.findOne({
         repoName: repoName,
       });
+      console.log(repoName, 'repoName');
       const repo = await axios(
         `https://api.github.com/users/${username}/repos`,
       );
-
+      console.log(existingRepo, 'existingrepo');
       const exist = repo.data.filter((data) => {
         return data.name === repoName;
       });
-
-      if (existingRepo && exist) {
+      console.log(exist, 'exist');
+      if (existingRepo && exist.length > 0) {
+        console.log(1);
         return true;
       } else if (existingRepo && !exist) {
+        console.log(2);
         await this.repoRepository.delete({ repoName });
         return false;
       } else {
+        console.log(3);
         return false;
       }
     } catch (e) {
@@ -236,6 +244,7 @@ export class UserService {
     const payload = {
       url: result.data.html_url,
       user: user,
+      repoName: params.repo,
     };
     const portfolioEntity = await this.portfolioRepo.create(payload);
     await this.portfolioRepo.save(portfolioEntity);

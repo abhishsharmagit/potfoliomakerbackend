@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "./user.entitity";
+import { User } from "./user.entity";
 
 @Entity()
 export class RepoEntity {

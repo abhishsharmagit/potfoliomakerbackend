@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import axios from "axios";
 import { CreateUserDTO } from "src/dto/createUserDTO";
-import { User } from "src/entities/user.entitity";
+import { User } from "src/entities/user.entity";
 import { UserService } from "src/user/user.service";
 import { Repository } from "typeorm";
 

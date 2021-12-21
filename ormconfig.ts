@@ -10,7 +10,7 @@ const config: PostgresConnectionOptions = {
   username: configService.get('POSTGRES_USER'),
   password: configService.get('POSTGRES_PASSWORD'),
   database: configService.get('POSTGRES_DB'),
-  synchronize: false,
+  synchronize: true,
   entities: [path.resolve(`${process.cwd()}/src/entities/*.js`)],
   migrationsTableName: 'typeorm_migrations',
   migrations: [path.resolve(`${process.cwd()}/dist/migrations/*.js`)],

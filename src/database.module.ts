@@ -23,7 +23,7 @@ import { dev } from './helper/types';
               password: configService.get('POSTGRES_PASSWORD'),
               database: configService.get('POSTGRES_DB'),
               entities: [User, FileEntity, PortfolioEntity, RepoEntity],
-              synchronize: false,
+              synchronize: true,
               migrationsTableName: 'typeorm_migrations',
               migrations: [
                 path.resolve(`${process.cwd()}/dist/migrations/*.js`),
@@ -41,7 +41,7 @@ import { dev } from './helper/types';
               password: configService.get('POSTGRES_PASSWORD'),
               database: configService.get('POSTGRES_DB'),
               entities: [User, FileEntity, PortfolioEntity, RepoEntity],
-              synchronize: false,
+              synchronize: true,
               migrationsTableName: 'typeorm_migrations',
               migrations: [
                 path.resolve(`${process.cwd()}/dist/migrations/*.js`),

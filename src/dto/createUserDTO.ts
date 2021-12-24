@@ -1,14 +1,14 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export interface IcreateUserDTO {
-  username: string;
+  userName: string;
   githubId:string;
   token:string;
 }
 
 export class CreateUserDTO implements IcreateUserDTO {
   @IsString()
-  username: string;
+  userName: string;
   @IsString()
   githubId: string;
   @IsString()

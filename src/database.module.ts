@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './entities/user.entity';
-import { FileEntity } from './entities/file.entity';
-import { PortfolioEntity } from './entities/portfolio.entity';
-import { RepoEntity } from './entities/repo.entity';
+import { Users } from './entities/user.entity';
 import * as path from 'path';
 import { dev } from './helper/types';
+import { UserPortfolio } from './entities/UserPortfolio';
+import { CreatedFileEntity } from './entities/CreatedFile/createdfile.entity';
 
 @Module({
   imports: [
@@ -22,7 +21,7 @@ import { dev } from './helper/types';
               username: configService.get('POSTGRES_USER'),
               password: configService.get('POSTGRES_PASSWORD'),
               database: configService.get('POSTGRES_DB'),
-              entities: [User, FileEntity, PortfolioEntity, RepoEntity],
+              entities: [Users, UserPortfolio, CreatedFileEntity],
               synchronize: true,
               migrationsTableName: 'typeorm_migrations',
               migrations: [
@@ -31,7 +30,6 @@ import { dev } from './helper/types';
               cli: {
                 migrationsDir: 'migrations',
               },
-              
             }
           : {
               type: 'postgres',
@@ -40,7 +38,7 @@ import { dev } from './helper/types';
               username: configService.get('POSTGRES_USER'),
               password: configService.get('POSTGRES_PASSWORD'),
               database: configService.get('POSTGRES_DB'),
-              entities: [User, FileEntity, PortfolioEntity, RepoEntity],
+              entities: [Users, UserPortfolio, CreatedFileEntity],
               synchronize: true,
               migrationsTableName: 'typeorm_migrations',
               migrations: [

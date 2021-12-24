@@ -1,13 +1,13 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNumber, IsString } from 'class-validator';
 
 export interface IcreatePortfolioDTO {
   about: string;
   address: string;
   description: string;
-  phone: string;
+  phone?: number | undefined;
   firstName: string;
-  portfolio: string;
-  profile?: string;
+  portfolioName: string;
+  profile: string;
   inTouch: string;
   email: string;
   template: string;
@@ -24,14 +24,16 @@ export class CreatePortfolioDTO implements IcreatePortfolioDTO {
   description: string;
   @IsString()
   firstName: string;
+  @IsNumber()
+  phone?: number;
   @IsString()
-  phone: string;
-  @IsString()
-  portfolio: string;
+  portfolioName: string;
   @IsString()
   inTouch: string;
-  @IsString()
+  @IsEmail()
   email: string;
   @IsString()
   template: string;
+  @IsString()
+  profile: string;
 }

@@ -1,16 +1,13 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { FileEntity } from "src/entities/file.entity";
-import { PortfolioEntity } from "src/entities/portfolio.entity";
-import { RepoEntity } from "src/entities/repo.entity";
-import { User } from "src/entities/user.entity";
-import { UserController } from "./user.controller";
-import { UserService } from "./user.service";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CreatedFileEntity } from 'src/entities/CreatedFile/createdfile.entity';
+import { Users } from 'src/entities/user.entity';
+import { UserPortfolio } from 'src/entities/UserPortfolio';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, FileEntity, PortfolioEntity, RepoEntity]),
-  ],
+  imports: [TypeOrmModule.forFeature([Users, UserPortfolio, CreatedFileEntity])],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

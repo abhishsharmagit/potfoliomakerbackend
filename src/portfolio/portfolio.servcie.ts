@@ -1,22 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { error } from 'console';
-import { IPortfolio, PortfolioEntity } from 'src/entities/portfolio.entity';
-import { User } from 'src/entities/user.entity';
+import { Users } from 'src/entities/user.entity';
+import { IUserPortfolio, UserPortfolio } from 'src/entities/UserPortfolio';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class PortfolioService {
   constructor(
-    @InjectRepository(PortfolioEntity)
-    private portfolioRepo: Repository<PortfolioEntity>,
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(UserPortfolio)
+    private portfolioRepo: Repository<UserPortfolio>,
+    @InjectRepository(Users) private userRepository: Repository<Users>,
   ) {}
 
-  async getCreatedPortfolio(id: string): Promise<IPortfolio[]> {
+  async getCreatedPortfolio(id: string): Promise<IUserPortfolio[]> {
     try {
-      const user = await this.userRepository.findOne({ id });
-      return await this.portfolioRepo.find({ user });
+     // const user = await this.userRepository.findOne({ id });
+      return await this.portfolioRepo.find({ userId: id });
     } catch (err) {
       throw new NotFoundException('Portfolio Not found');
     }

@@ -1,9 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
-import { FileEntity } from 'src/entities/file.entity';
-import { PortfolioEntity } from 'src/entities/portfolio.entity';
-import { RepoEntity } from 'src/entities/repo.entity';
-import { User } from 'src/entities/user.entity';
+import { Users } from 'src/entities/user.entity';
 
 export interface JWTPayload {
   id: string;
@@ -19,7 +16,7 @@ export const developmentOptions = {
   username: configService.get('POSTGRES_USER'),
   password: configService.get('POSTGRES_PASSWORD'),
   database: configService.get('POSTGRES_DB'),
-  entities: [User, FileEntity, PortfolioEntity, RepoEntity],
+  entities: [Users],
   synchronize: false,
   migrationsTableName: 'typeorm_migrations',
   migrations: [path.resolve(`${process.cwd()}/dist/migrations/*.js`)],
@@ -35,7 +32,7 @@ export const prodOptions = {
   username: configService.get('POSTGRES_USER'),
   password: configService.get('POSTGRES_PASSWORD'),
   database: configService.get('POSTGRES_DB'),
-  entities: [User, FileEntity, PortfolioEntity, RepoEntity],
+  entities: [Users],
   synchronize: false,
   migrationsTableName: 'typeorm_migrations',
   migrations: [path.resolve(`${process.cwd()}/dist/migrations/*.js`)],

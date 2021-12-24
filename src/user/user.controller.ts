@@ -10,12 +10,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JWTAuthGuard } from 'src/auth/guard/jwtGuard';
-import { Request } from 'express';
-import { IUser, User } from 'src/entities/user.entity';
-import {
-  CreatePortfolioDTO,
-  IcreatePortfolioDTO,
-} from 'src/dto/createPortfolioDTO';
+import { IUser } from 'src/entities/user.entity';
+import { IcreatePortfolioDTO } from 'src/dto/createPortfolioDTO';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
 import { diskStorage } from 'multer';
@@ -72,7 +68,6 @@ export class UserController {
   @UseInterceptors(FileInterceptor('file', storeImage))
   uploadImage(@UploadedFile() file, @Req() req) {
     try {
-      console.log(file, 'filename');
       return file.filename;
     } catch (err) {
       console.log(err);
@@ -84,12 +79,9 @@ export class UserController {
   @UseInterceptors(FileInterceptor('resume', storeResume))
   uploadFile(@UploadedFile() file, @Req() req) {
     try {
-      console.log(file, 'filename');
       return file.filename;
     } catch (err) {
       console.log(err);
     }
   }
-
- 
 }

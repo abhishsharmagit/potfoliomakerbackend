@@ -5,44 +5,49 @@ import { CreateRepoDTO } from '../dto/createRepoDTO';
 import { AuthService } from '../auth/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IUser, User } from '../entities/user.entity';
+import { IUser, Users } from '../entities/user.entity';
 import * as fs from 'fs';
 import { filePayload } from 'src/helper/config';
 import { DeployPortfolioDTO } from 'src/dto/deployPortfolioDTO';
-import { FileEntity } from 'src/entities/file.entity';
-import { PortfolioEntity } from 'src/entities/portfolio.entity';
-import { RepoEntity } from 'src/entities/repo.entity';
 import { IcreatePortfolioDTO } from 'src/dto/createPortfolioDTO';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  IFileSHA,
+  IUserPortfolio,
+  UserPortfolio,
+} from 'src/entities/UserPortfolio';
+import { CreatedFileEntity } from 'src/entities/CreatedFile/createdfile.entity';
+import { ICreatedFileInterface } from 'src/entities/CreatedFile/createdfile.interface';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(FileEntity)
-    private fileRepository: Repository<FileEntity>,
-    @InjectRepository(PortfolioEntity)
-    private portfolioRepo: Repository<PortfolioEntity>,
-    @InjectRepository(RepoEntity)
-    private repoRepository: Repository<RepoEntity>,
+    @InjectRepository(Users) private userRepository: Repository<Users>,
+    @InjectRepository(UserPortfolio)
+    private portfolioRepo: Repository<UserPortfolio>,
+    @InjectRepository(CreatedFileEntity)
+    private CreatedFileRepo: Repository<CreatedFileEntity>,
   ) {}
 
   async getUser(id: string): Promise<IUser> {
     try {
-      const user: User = await this.userRepository.findOne({
+      const user: Users = await this.userRepository.findOne({
         id,
       });
       return {
         id: user.id,
         githubId: user.githubId,
-        username: user.username,
+        username: user.userName,
       };
     } catch (e) {
       console.log(e.message);
     }
   }
 
-  async createRepo(dto: CreateRepoDTO, id: string) {
+  async createRepo(
+    dto: CreateRepoDTO,
+    id: string,
+    portfolioDTO: IcreatePortfolioDTO,
+  ) {
     try {
       const user = await this.userRepository.findOne(id);
 
@@ -59,42 +64,50 @@ export class UserService {
         config,
       );
 
-      const payload = {
-        repoName: dto.name,
-        user: user,
+      const payload: IUserPortfolio = {
+        userId: id,
+        firstName: portfolioDTO.firstName,
+        about: portfolioDTO.about,
+        address: portfolioDTO.address,
+        portfolioName: portfolioDTO.portfolioName,
+        profile: portfolioDTO.profile,
+        inTouch: portfolioDTO.inTouch,
+        description: portfolioDTO.description,
+        template: portfolioDTO.template,
+        email: portfolioDTO.email,
+        phone: portfolioDTO.phone,
       };
-      const repoEntity = await this.repoRepository.create(payload);
-      await this.repoRepository.save(repoEntity);
-      console.log('repocreatedherrererererere');
+      const userEntity = await this.portfolioRepo.create(payload);
+      console.log(userEntity, 'userentity')
+      const result = await this.portfolioRepo.save(userEntity);
+      console.log(result, 'result')
       return repo.data;
     } catch (e) {
       console.log(e.message, 'repoerror');
     }
   }
 
-  async checkRepoExist(username: string, repoName: string): Promise<boolean> {
+  async checkRepoExist(userName: string, repoName: string): Promise<boolean> {
     try {
-      const existingRepo = await this.repoRepository.findOne({
-        repoName: repoName,
+      const existingRepo = await this.portfolioRepo.findOne({
+        portfolioName: repoName,
       });
-      console.log(repoName, 'repoName');
+
       const repo = await axios(
-        `https://api.github.com/users/${username}/repos`,
+        `https://api.github.com/users/${userName}/repos`,
       );
       console.log(existingRepo, 'existingrepo');
-      const exist = repo.data.filter((data) => {
+
+      const exist = repo.data.filter((data: any) => {
         return data.name === repoName;
       });
       console.log(exist, 'exist');
       if (existingRepo && exist.length > 0) {
-        console.log(1);
         return true;
       } else if (existingRepo && !exist) {
-        console.log(2);
-        await this.repoRepository.delete({ repoName });
+        await this.portfolioRepo.delete({ portfolioName: repoName });
         return false;
       } else {
-        console.log(3);
         return false;
       }
     } catch (e) {
@@ -105,21 +118,23 @@ export class UserService {
   async createFile(id: string, dto: CreateFileDTO, repoName: string) {
     try {
       const user = await this.userRepository.findOne(id);
-      const fileExist = await this.fileRepository.findOne({
+      const fileExist = await this.CreatedFileRepo.findOne({
         fileName: dto.fileName,
         repoName: repoName,
+        userId: id,
       });
 
       const params = {
-        owner: user.username,
+        owner: user.userName,
         repo: repoName,
         path: dto.path,
       };
+
       const content = fs.readFileSync(
         `${process.cwd()}/dist/${dto.readPath}`,
         'binary',
       );
-      console.log(1);
+
       const data = fileExist
         ? {
             message: dto.message,
@@ -144,17 +159,18 @@ export class UserService {
         config,
       );
       console.log(2);
-      const payload = {
+
+      const payload: ICreatedFileInterface = {
         fileName: createdfile.data.content.name,
         sha: createdfile.data.content.sha,
         repoName: repoName,
-        user: user,
+        userId: id,
       };
       if (!fileExist) {
-        const fileEntity = await this.fileRepository.create(payload);
-        await this.fileRepository.save(fileEntity);
+        const fileEntity = await this.CreatedFileRepo.create(payload);
+        await this.CreatedFileRepo.save(fileEntity);
       } else {
-        await this.fileRepository.update({ id: fileExist.id }, payload);
+        await this.CreatedFileRepo.update({ id }, payload);
       }
 
       return createdfile.data;
@@ -181,7 +197,7 @@ export class UserService {
       const user = await this.userRepository.findOne(id);
 
       const repoPayload: CreateRepoDTO = {
-        name: dto.portfolio,
+        name: dto.portfolioName,
         description: 'my portfolio',
         homepage: 'https://github.com',
         private: false,
@@ -189,21 +205,22 @@ export class UserService {
         has_projects: true,
         has_wiki: true,
       };
-      console.log(repoPayload, 'repopayload');
 
       const checkRepoExist = await this.checkRepoExist(
-        user.username,
+        user.userName,
         repoPayload.name,
       );
+
       if (!checkRepoExist) {
-        await this.createRepo(repoPayload, id);
+        await this.createRepo(repoPayload, id, dto);
       }
 
       const files = filePayload(dto.template, dto.imageName, dto.resumeName);
-      console.log(files, 'files');
+
       for (const file of files) {
         await this.createFile(id, file, repoPayload.name);
       }
+
       const githubPage = await this.getGithubPage(repoPayload.name, id);
 
       if (githubPage) {
@@ -220,7 +237,7 @@ export class UserService {
     const user = await this.userRepository.findOne(id);
 
     const params: DeployPortfolioDTO = {
-      owner: user.username,
+      owner: user.userName,
       repo: repoName,
     };
     const data = {
@@ -241,13 +258,9 @@ export class UserService {
       `https://api.github.com/repos/${params.owner}/${params.repo}/pages`,
       config,
     );
-    const payload = {
-      url: result.data.html_url,
-      user: user,
-      repoName: params.repo,
-    };
-    const portfolioEntity = await this.portfolioRepo.create(payload);
-    await this.portfolioRepo.save(portfolioEntity);
+
+    await this.portfolioRepo.update({ id }, { url: result.data.html_url });
+
     return `${result.data.html_url}`;
   }
 
@@ -262,7 +275,7 @@ export class UserService {
       };
 
       const page: any = await axios(
-        `https://api.github.com/repos/${user.username}/${repo}/pages`,
+        `https://api.github.com/repos/${user.userName}/${repo}/pages`,
         config,
       );
       return page.data.html_url;

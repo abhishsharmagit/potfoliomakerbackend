@@ -1,15 +1,13 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FileEntity } from './file.entity';
-import { PortfolioEntity } from './portfolio.entity';
-import { RepoEntity } from './repo.entity';
+import { UserPortfolio } from './UserPortfolio';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
+export class Users {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  username: string;
+  userName: string;
 
   @Column()
   token: string;
@@ -17,16 +15,9 @@ export class User {
   @Column()
   githubId: string;
 
-  @OneToMany(() => FileEntity, (file: FileEntity) => file.id)
-  file: FileEntity[];
+  @OneToMany(() => UserPortfolio, (userPortfolio: UserPortfolio) => userPortfolio.id)
+  portfolios: UserPortfolio[];
 
-  @OneToMany(
-    () => PortfolioEntity,
-    (portfolio: PortfolioEntity) => portfolio.id,
-  )
-  portfolios: PortfolioEntity[];
-  @OneToMany(() => RepoEntity, (repo: RepoEntity) => repo.id)
-  repos: RepoEntity[];
 }
 
 export interface IUser {

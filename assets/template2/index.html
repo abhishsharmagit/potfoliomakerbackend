@@ -261,6 +261,7 @@
           address.innerHTML = data.address;
           about.innerHTML = data.about;
           inTouch.innerHTML = data.inTouch;
+          console.log(data.imageName, 'imagname');
           data.imageName
             ? (portfolioImg.src = `./images/portfolioImage.${ext}`)
             : (portfolioImg.src =

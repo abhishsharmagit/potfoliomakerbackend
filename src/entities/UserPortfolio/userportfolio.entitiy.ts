@@ -31,7 +31,7 @@ export class UserPortfolio implements IUserPortfolio {
   @Column()
   about: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: number;
 
   @Column()

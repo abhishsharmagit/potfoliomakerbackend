@@ -27,8 +27,9 @@ export class PortfolioController {
     @Body() dto: ICheckRepoDTO,
     @Req() req,
   ): Promise<boolean> {
+    console.log(dto, 'dto');
     const result = await this.userService.checkRepoExist(
-      req.user.username,
+      req.user.userName,
       dto.repoName,
     );
     console.log(result, 'result');

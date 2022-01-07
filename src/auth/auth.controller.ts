@@ -16,9 +16,10 @@ export class AuthController {
   @Get('/callback')
   getUserfromGithub(@Req() req) {
     try {
+      console.log(req.user, 'reqobj')
       const payload: JWTPayload = {
         id: req.user.id,
-        username: req.user.username,
+        userName: req.user.userName,
       };
 
       const token = this.jwtService.sign(payload);

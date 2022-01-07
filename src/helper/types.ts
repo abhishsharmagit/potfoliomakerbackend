@@ -4,7 +4,7 @@ import { Users } from 'src/entities/user.entity';
 
 export interface JWTPayload {
   id: string;
-  username: string;
+  userName: string;
 }
 const configService = new ConfigService();
 

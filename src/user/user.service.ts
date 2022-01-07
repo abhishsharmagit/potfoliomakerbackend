@@ -77,10 +77,11 @@ export class UserService {
         email: portfolioDTO.email,
         phone: portfolioDTO.phone,
       };
+      console.log(payload, 'payload');
       const userEntity = await this.portfolioRepo.create(payload);
-      console.log(userEntity, 'userentity')
+      console.log(userEntity, 'userentity');
       const result = await this.portfolioRepo.save(userEntity);
-      console.log(result, 'result')
+      console.log(result, 'result');
       return repo.data;
     } catch (e) {
       console.log(e.message, 'repoerror');
@@ -92,22 +93,24 @@ export class UserService {
       const existingRepo = await this.portfolioRepo.findOne({
         portfolioName: repoName,
       });
-
+      console.log(existingRepo, 'existingrepo');
       const repo = await axios(
         `https://api.github.com/users/${userName}/repos`,
       );
-      console.log(existingRepo, 'existingrepo');
 
       const exist = repo.data.filter((data: any) => {
         return data.name === repoName;
       });
       console.log(exist, 'exist');
       if (existingRepo && exist.length > 0) {
+        console.log(123);
         return true;
-      } else if (existingRepo && !exist) {
+      } else if (existingRepo && exist.length === 0) {
+        console.log(456);
         await this.portfolioRepo.delete({ portfolioName: repoName });
         return false;
       } else {
+        console.log(789);
         return false;
       }
     } catch (e) {
@@ -212,6 +215,7 @@ export class UserService {
       );
 
       if (!checkRepoExist) {
+        console.log('reponotexist');
         await this.createRepo(repoPayload, id, dto);
       }
 

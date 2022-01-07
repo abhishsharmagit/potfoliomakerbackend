@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -7,6 +8,9 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  UsePipes,
+  ValidationError,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JWTAuthGuard } from 'src/auth/guard/jwtGuard';
@@ -43,6 +47,13 @@ export const storeResume = {
 };
 
 @Controller()
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+    exceptionFactory: (errors: ValidationError[]) =>
+      new BadRequestException(errors),
+  }),
+)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -60,6 +71,7 @@ export class UserController {
   @UseGuards(JWTAuthGuard)
   @Post('/create')
   async createPortfolio(@Body() dto: IcreatePortfolioDTO, @Req() req) {
+    console.log(dto, 'dto');
     return await this.userService.createPortfolio(dto, req.user.id);
   }
 
